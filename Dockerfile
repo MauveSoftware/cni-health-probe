@@ -9,4 +9,4 @@ ENV CONFIG_FILE /config/config.yml
 ENV CMD_ARGS ""
 COPY --from=builder /go/cni-health-probe/cni-health-probe /app/cni-health-probe
 EXPOSE 9999
-ENTRYPOINT /app/cni-health-probe -c /app/config.yml $CMD_ARGS
+ENTRYPOINT /app/cni-health-probe --config $CONFIG_FILE $CMD_ARGS
