@@ -52,6 +52,7 @@ func (m *monitor) checkConnectivity(n *node) {
 	p.Count = int(m.cfg.Ping.Count)
 	p.Timeout = m.cfg.Ping.Timeout
 	p.Interval = m.cfg.Ping.Interval
+	p.SetPrivileged(true)
 
 	err = p.Run()
 	if err != nil {
@@ -64,9 +65,6 @@ func (m *monitor) checkConnectivity(n *node) {
 	ls := []label.KeyValue{
 		label.String("destination", n.name),
 	}
-
-	/*m.mu.Lock()
-	defer m.mu.Unlock()*/
 
 	ctx := context.Background()
 	m.metr.sentPackets.Add(ctx, int64(s.PacketsSent), ls...)
