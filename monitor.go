@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"sync"
 	"time"
 
@@ -45,9 +44,12 @@ func (m *monitor) run() {
 }
 
 func (m *monitor) checkConnectivity(n *node) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
 	p, err := ping.NewPinger(n.ip.String())
 	if err != nil {
-		fmt.Println(err)
+		logrus.Error(err)
 	}
 	p.Count = int(m.cfg.Ping.Count)
 	p.Timeout = m.cfg.Ping.Timeout
@@ -56,7 +58,7 @@ func (m *monitor) checkConnectivity(n *node) {
 
 	err = p.Run()
 	if err != nil {
-		fmt.Println(err)
+		logrus.Error(err)
 	}
 	s := p.Statistics()
 	logrus.Infof("%s: Loss = %v (%v/%v), Dups = %v, Min = %v, Max = %v, Avg = %v, StdDev = %v",
