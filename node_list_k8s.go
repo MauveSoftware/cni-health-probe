@@ -38,7 +38,7 @@ func (l *apiNodeList) list() ([]*node, error) {
 
 	list := make([]*node, 0)
 	for _, n := range nodes.Items {
-		v, exists := n.Annotations["mauve.cloud/cni-tunnel-ip"]
+		v, exists := n.Labels["mauve.cloud/cni-tunnel-ip"]
 		if !exists {
 			continue
 		}
