@@ -11,8 +11,12 @@ import (
 	"go.opentelemetry.io/otel/label"
 )
 
+type nodeList interface {
+	list() ([]*node, error)
+}
+
 type monitor struct {
-	nodes *nodeList
+	nodes nodeList
 	cfg   *config.Config
 	metr  *metrics
 	mu    sync.Mutex

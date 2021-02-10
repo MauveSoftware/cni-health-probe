@@ -5,9 +5,6 @@ import (
 	"github.com/sirupsen/logrus"
 
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
-
-	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/tools/clientcmd"
 )
 
 func main() {
@@ -20,22 +17,12 @@ func main() {
 		logrus.Panic(err)
 	}
 
-	config, err := clientcmd.BuildConfigFromFlags("", cfg.KubeConfigPath)
-	if err != nil {
-		logrus.Panic(err)
-	}
-
-	clientset, err := kubernetes.NewForConfig(config)
-	if err != nil {
-		logrus.Panic(err)
-	}
-
 	prom, err := newMetrics(*metricsAddress)
 	if err != nil {
 		logrus.Panic(err)
 	}
 
-	nodes := &nodeList{clientSet: clientset}
+	nodes := newAPINodeList(cfg.KubeConfigPath)
 	monitor := &monitor{
 		metr:  prom,
 		nodes: nodes,
