@@ -44,8 +44,7 @@ func (m *monitor) run() {
 }
 
 func (m *monitor) checkConnectivity(n *node) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
+	logrus.Infof("Check connectivity to %s (%s)", n.name, n.ip)
 
 	p, err := ping.NewPinger(n.ip.String())
 	if err != nil {
