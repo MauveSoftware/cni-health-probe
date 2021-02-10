@@ -43,7 +43,7 @@ func (l *apiNodeList) list() ([]*node, error) {
 			continue
 		}
 
-		ip, _, _ := net.ParseCIDR(v)
+		ip := net.ParseIP(v)
 		if ip == nil {
 			continue
 		}
