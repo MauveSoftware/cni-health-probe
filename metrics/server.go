@@ -61,7 +61,7 @@ func (srv *Server) init() error {
 	}
 	srv.prom = exporter
 
-	const ns = "node_cni_probe"
+	const ns = "kube_cni_probe"
 	meter := otel.Meter(ns)
 	srv.sentPackets = metric.Must(meter).NewInt64Counter(ns+"/sent_packet_count", metric.WithDescription("Echo packets sent since start"))
 	srv.receivedPackets = metric.Must(meter).NewInt64Counter(ns+"/received_packet_count", metric.WithDescription("Echo responses received since start"))
