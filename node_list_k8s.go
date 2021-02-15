@@ -2,6 +2,7 @@ package main
 
 import (
 	"net"
+	"os"
 
 	"github.com/MauveSoftware/cni-health-probe/config"
 	"github.com/pkg/errors"
@@ -13,8 +14,9 @@ import (
 )
 
 type apiNodeList struct {
-	cfg       *config.Config
-	clientSet *kubernetes.Clientset
+	cfg        *config.Config
+	clientSet  *kubernetes.Clientset
+	myNodeName string
 }
 
 func newAPINodeList(cfg *config.Config) *apiNodeList {
@@ -23,14 +25,17 @@ func newAPINodeList(cfg *config.Config) *apiNodeList {
 		logrus.Panic(err)
 	}
 
+	nodeName, _ := os.LookupEnv("NODE_NAME")
+
 	clientset, err := kubernetes.NewForConfig(config)
 	if err != nil {
 		logrus.Panic(err)
 	}
 
 	return &apiNodeList{
-		cfg:       cfg,
-		clientSet: clientset,
+		cfg:        cfg,
+		clientSet:  clientset,
+		myNodeName: nodeName,
 	}
 }
 
@@ -41,8 +46,14 @@ func (l *apiNodeList) list() ([]*node, error) {
 		return nil, errors.Wrap(err, "could not get node list")
 	}
 
+	containsMyHost := false
 	list := make([]*node, 0)
 	for _, n := range nodes.Items {
+		if n.Name == l.myNodeName {
+			containsMyHost = true
+			continue
+		}
+
 		v, exists := n.Labels["mauve.cloud/cni-tunnel-ip"]
 		if !exists {
 			continue
@@ -57,6 +68,10 @@ func (l *apiNodeList) list() ([]*node, error) {
 			name: n.Name,
 			ip:   ip,
 		})
+	}
+
+	if !containsMyHost {
+		return nil, hostDrainedErr
 	}
 
 	return list, nil

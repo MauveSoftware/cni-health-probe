@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"sync"
 	"time"
 
@@ -32,6 +33,12 @@ func (m *monitor) start() {
 func (m *monitor) run() {
 	l, err := m.nodes.list()
 	if err != nil {
+		if errors.Is(err, hostDrainedErr) {
+			logrus.Info("Host is drained. Wait for 60 seconds before next try.")
+			time.Sleep(60 * time.Second)
+			return
+		}
+
 		logrus.Error(err)
 	}
 
