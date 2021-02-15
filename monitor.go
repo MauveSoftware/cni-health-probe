@@ -6,9 +6,10 @@ import (
 	"time"
 
 	"github.com/MauveSoftware/cni-health-probe/config"
+	"github.com/MauveSoftware/cni-health-probe/metrics"
+
 	"github.com/go-ping/ping"
 	"github.com/sirupsen/logrus"
-	"go.opentelemetry.io/otel/label"
 )
 
 type nodeList interface {
@@ -18,8 +19,7 @@ type nodeList interface {
 type monitor struct {
 	nodes nodeList
 	cfg   *config.Config
-	metr  *metrics
-	mu    sync.Mutex
+	metr  metrics.Reporter
 }
 
 func (m *monitor) start() {
@@ -65,18 +65,14 @@ func (m *monitor) checkConnectivity(n *node) {
 	logrus.Infof("%s: Loss = %v (%v/%v), Dups = %v, Min = %v, Max = %v, Avg = %v, StdDev = %v",
 		n.name, s.PacketLoss, s.PacketsRecv, s.PacketsSent, s.PacketsRecvDuplicates, s.MinRtt, s.MaxRtt, s.AvgRtt, s.StdDevRtt)
 
-	ls := []label.KeyValue{
-		label.String("destination", n.name),
-	}
-
 	ctx := context.Background()
-	m.metr.sentPackets.Add(ctx, int64(s.PacketsSent), ls...)
-	m.metr.receivedPackets.Add(ctx, int64(s.PacketsRecv), ls...)
-	m.metr.lostPackets.Add(ctx, int64(s.PacketsSent-p.PacketsRecv), ls...)
-	m.metr.receivedDups.Add(ctx, int64(s.PacketsRecvDuplicates), ls...)
+	m.metr.ReportSentPackets(ctx, n.name, int64(s.PacketsSent))
+	m.metr.ReportReceivedPackets(ctx, n.name, int64(s.PacketsRecv))
+	m.metr.ReportDupPackets(ctx, n.name, int64(s.PacketsRecvDuplicates))
+	m.metr.ReportLostPackets(ctx, n.name, int64(s.PacketsSent-s.PacketsRecv))
 	if s.PacketLoss < 100 {
 		for _, r := range s.Rtts {
-			m.metr.rtt.Record(ctx, float64(r.Milliseconds()), ls...)
+			m.metr.ReportRTT(ctx, n.name, float64(r.Milliseconds()))
 		}
 	}
 }

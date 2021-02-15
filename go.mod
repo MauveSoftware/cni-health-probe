@@ -9,7 +9,6 @@ require (
 	github.com/sirupsen/logrus v1.6.0
 	go.opentelemetry.io/otel v0.16.0
 	go.opentelemetry.io/otel/exporters/metric/prometheus v0.16.0
-	go.opentelemetry.io/otel/sdk v0.16.0
 	golang.org/x/net v0.0.0-20201209123823-ac852fbbde11 // indirect
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
 	gopkg.in/go-playground/assert.v1 v1.2.1

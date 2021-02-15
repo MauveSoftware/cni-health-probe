@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/MauveSoftware/cni-health-probe/config"
+	"github.com/MauveSoftware/cni-health-probe/metrics"
 	"github.com/sirupsen/logrus"
 
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
@@ -17,7 +18,7 @@ func main() {
 		logrus.Panic(err)
 	}
 
-	prom, err := newMetrics(*metricsAddress)
+	prom, err := metrics.NewServer(*metricsAddress)
 	if err != nil {
 		logrus.Panic(err)
 	}
@@ -30,5 +31,5 @@ func main() {
 	}
 	go monitor.start()
 
-	logrus.Fatal(prom.listen())
+	logrus.Fatal(prom.Listen())
 }
