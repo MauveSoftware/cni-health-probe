@@ -23,7 +23,7 @@ func main() {
 		logrus.Panic(err)
 	}
 
-	nodes := newAPINodeList(cfg.KubeConfigPath)
+	nodes := newAPINodeList(cfg)
 	monitor := &monitor{
 		metr:  prom,
 		nodes: nodes,

@@ -3,19 +3,22 @@ package main
 import (
 	"net"
 
+	"github.com/MauveSoftware/cni-health-probe/config"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 )
 
 type apiNodeList struct {
+	cfg       *config.Config
 	clientSet *kubernetes.Clientset
 }
 
-func newAPINodeList(kubeconfig string) *apiNodeList {
-	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
+func newAPINodeList(cfg *config.Config) *apiNodeList {
+	config, err := clientcmd.BuildConfigFromFlags("", cfg.KubeConfigPath)
 	if err != nil {
 		logrus.Panic(err)
 	}
@@ -26,12 +29,14 @@ func newAPINodeList(kubeconfig string) *apiNodeList {
 	}
 
 	return &apiNodeList{
+		cfg:       cfg,
 		clientSet: clientset,
 	}
 }
 
 func (l *apiNodeList) list() ([]*node, error) {
-	nodes, err := l.clientSet.CoreV1().Nodes().List(v1.ListOptions{})
+	selector := v1.LabelSelector{MatchLabels: l.cfg.NodeSelector}
+	nodes, err := l.clientSet.CoreV1().Nodes().List(v1.ListOptions{LabelSelector: labels.Set(selector.MatchLabels).String()})
 	if err != nil {
 		return nil, errors.Wrap(err, "could not get node list")
 	}
