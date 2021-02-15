@@ -61,12 +61,13 @@ func (srv *Server) init() error {
 	}
 	srv.prom = exporter
 
-	meter := otel.Meter("node_cni_probe")
-	srv.sentPackets = metric.Must(meter).NewInt64Counter("sent_packet_count", metric.WithDescription("Echo packets sent since start"))
-	srv.receivedPackets = metric.Must(meter).NewInt64Counter("received_packet_count", metric.WithDescription("Echo responses received since start"))
-	srv.lostPackets = metric.Must(meter).NewInt64Counter("lost_packet_count", metric.WithDescription("Lost echo packets requests since start"))
-	srv.receivedDups = metric.Must(meter).NewInt64Counter("received_duplicate_packet_count", metric.WithDescription("Duplicate responses received since start"))
-	srv.rtt = metric.Must(meter).NewFloat64ValueRecorder("rtt", metric.WithDescription("Roundtrip time"), metric.WithUnit(unit.Milliseconds))
+	const ns = "node_cni_probe"
+	meter := otel.Meter(ns)
+	srv.sentPackets = metric.Must(meter).NewInt64Counter(ns+"/sent_packet_count", metric.WithDescription("Echo packets sent since start"))
+	srv.receivedPackets = metric.Must(meter).NewInt64Counter(ns+"/received_packet_count", metric.WithDescription("Echo responses received since start"))
+	srv.lostPackets = metric.Must(meter).NewInt64Counter(ns+"/lost_packet_count", metric.WithDescription("Lost echo packets requests since start"))
+	srv.receivedDups = metric.Must(meter).NewInt64Counter(ns+"/received_duplicate_packet_count", metric.WithDescription("Duplicate responses received since start"))
+	srv.rtt = metric.Must(meter).NewFloat64ValueRecorder(ns+"/rtt", metric.WithDescription("Roundtrip time"), metric.WithUnit(unit.Milliseconds))
 
 	return nil
 }
