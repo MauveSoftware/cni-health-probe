@@ -1,0 +1,7 @@
+ping:
+  count: 10
+  timeout: 1s
+  interval: 100ms
+kubeconfig: ~/kubeconfig
+nodeSelector:
+  "mauve.cloud/test": "foo"
