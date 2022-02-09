@@ -5,3 +5,6 @@ ping:
 kubeconfig: ~/kubeconfig
 nodeSelector:
   "mauve.cloud/test": "foo"
+podSelector:
+  "app": "my-app"
+namespace: default

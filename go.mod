@@ -13,6 +13,7 @@ require (
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
 	gopkg.in/go-playground/assert.v1 v1.2.1
 	gopkg.in/yaml.v2 v2.3.0
+	k8s.io/api v0.16.7
 	k8s.io/apimachinery v0.16.7
 	k8s.io/client-go v0.16.7
 )
@@ -46,7 +47,6 @@ require (
 	google.golang.org/appengine v1.5.0 // indirect
 	google.golang.org/protobuf v1.23.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
-	k8s.io/api v0.16.7 // indirect
 	k8s.io/klog v1.0.0 // indirect
 	k8s.io/utils v0.0.0-20190801114015-581e00157fb1 // indirect
 	sigs.k8s.io/yaml v1.1.0 // indirect

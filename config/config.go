@@ -14,6 +14,8 @@ type Config struct {
 	Ping           PingConfig        `yaml:"ping"`
 	KubeConfigPath string            `yaml:"kubeconfig"`
 	NodeSelector   map[string]string `yaml:"nodeSelector"`
+	PodSelector    map[string]string `yaml:"podSelector"`
+	Namespace      string            `yaml:"namespace"`
 }
 
 // PingConfig defines the parameter for the ping health check
@@ -32,6 +34,10 @@ func New() *Config {
 			Interval: 1 * time.Second,
 		},
 		NodeSelector: make(map[string]string),
+		PodSelector: map[string]string{
+			"app": "cni-health-probe",
+		},
+		Namespace: "kube-system",
 	}
 }
 

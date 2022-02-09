@@ -23,6 +23,10 @@ func TestLoad(t *testing.T) {
 		NodeSelector: map[string]string{
 			"mauve.cloud/test": "foo",
 		},
+		PodSelector: map[string]string{
+			"app": "my-app",
+		},
+		Namespace: "default",
 	}
 	assert.Equal(t, expected, cfg)
 }

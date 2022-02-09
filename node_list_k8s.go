@@ -7,6 +7,7 @@ import (
 	"github.com/MauveSoftware/cni-health-probe/config"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
+	corev1 "k8s.io/api/core/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/kubernetes"
@@ -58,7 +59,11 @@ func (l *apiNodeList) list() ([]*node, error) {
 			continue
 		}
 
-		ip := net.ParseIP(n.Status.Addresses[0].Address)
+		ip, err := l.podIPForNode(n)
+		if err != nil {
+			return nil, errors.Wrap(err, "could not get pod IP for node "+n.Name)
+		}
+
 		if ip == nil {
 			continue
 		}
@@ -74,4 +79,22 @@ func (l *apiNodeList) list() ([]*node, error) {
 	}
 
 	return list, nil
+}
+
+func (l *apiNodeList) podIPForNode(n corev1.Node) (net.IP, error) {
+	selector := v1.LabelSelector{MatchLabels: l.cfg.PodSelector}
+	pods, err := l.clientSet.CoreV1().Pods(l.cfg.Namespace).List(v1.ListOptions{
+		LabelSelector: labels.Set(selector.MatchLabels).String(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	for _, p := range pods.Items {
+		if p.Status.HostIP == n.Status.Addresses[0].Address && p.Status.Phase == corev1.PodRunning {
+			return net.ParseIP(p.Status.PodIP), nil
+		}
+	}
+
+	return nil, err
 }

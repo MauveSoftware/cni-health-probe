@@ -69,8 +69,8 @@ func (m *monitor) checkConnectivity(n *node) {
 		logrus.Error(err)
 	}
 	s := p.Statistics()
-	logrus.Infof("%s: Loss = %v (%v/%v), Dups = %v, Min = %v, Max = %v, Avg = %v, StdDev = %v",
-		n.name, s.PacketLoss, s.PacketsRecv, s.PacketsSent, s.PacketsRecvDuplicates, s.MinRtt, s.MaxRtt, s.AvgRtt, s.StdDevRtt)
+	logrus.Infof("%s (%s): Loss = %v (%v/%v), Dups = %v, Min = %v, Max = %v, Avg = %v, StdDev = %v",
+		n.name, n.ip, s.PacketLoss, s.PacketsRecv, s.PacketsSent, s.PacketsRecvDuplicates, s.MinRtt, s.MaxRtt, s.AvgRtt, s.StdDevRtt)
 
 	ctx := context.Background()
 	m.metr.ReportSentPackets(ctx, n.name, int64(s.PacketsSent))
