@@ -54,12 +54,11 @@ func (l *apiNodeList) list() ([]*node, error) {
 			continue
 		}
 
-		v, exists := n.Labels["mauve.cloud/cni-tunnel-ip"]
-		if !exists {
+		if len(n.Status.Addresses) == 0 {
 			continue
 		}
 
-		ip := net.ParseIP(v)
+		ip := net.ParseIP(n.Status.Addresses[0].Address)
 		if ip == nil {
 			continue
 		}
