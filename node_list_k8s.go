@@ -1,11 +1,12 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"net"
 	"os"
 
 	"github.com/MauveSoftware/cni-health-probe/config"
-	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	corev1 "k8s.io/api/core/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -41,10 +42,11 @@ func newAPINodeList(cfg *config.Config) *apiNodeList {
 }
 
 func (l *apiNodeList) list() ([]*node, error) {
+	ctx := context.Background()
 	selector := v1.LabelSelector{MatchLabels: l.cfg.NodeSelector}
-	nodes, err := l.clientSet.CoreV1().Nodes().List(v1.ListOptions{LabelSelector: labels.Set(selector.MatchLabels).String()})
+	nodes, err := l.clientSet.CoreV1().Nodes().List(ctx, v1.ListOptions{LabelSelector: labels.Set(selector.MatchLabels).String()})
 	if err != nil {
-		return nil, errors.Wrap(err, "could not get node list")
+		return nil, fmt.Errorf("could not get node list: %w", err)
 	}
 
 	containsMyHost := false
@@ -59,9 +61,9 @@ func (l *apiNodeList) list() ([]*node, error) {
 			continue
 		}
 
-		ip, err := l.podIPForNode(n)
+		ip, err := l.podIPForNode(ctx, n)
 		if err != nil {
-			return nil, errors.Wrap(err, "could not get pod IP for node "+n.Name)
+			return nil, fmt.Errorf("could not get pod IP for node %s: %w", n.Name, err)
 		}
 
 		if ip == nil {
@@ -81,9 +83,9 @@ func (l *apiNodeList) list() ([]*node, error) {
 	return list, nil
 }
 
-func (l *apiNodeList) podIPForNode(n corev1.Node) (net.IP, error) {
+func (l *apiNodeList) podIPForNode(ctx context.Context, n corev1.Node) (net.IP, error) {
 	selector := v1.LabelSelector{MatchLabels: l.cfg.PodSelector}
-	pods, err := l.clientSet.CoreV1().Pods(l.cfg.Namespace).List(v1.ListOptions{
+	pods, err := l.clientSet.CoreV1().Pods(l.cfg.Namespace).List(ctx, v1.ListOptions{
 		LabelSelector: labels.Set(selector.MatchLabels).String(),
 	})
 	if err != nil {
@@ -96,5 +98,5 @@ func (l *apiNodeList) podIPForNode(n corev1.Node) (net.IP, error) {
 		}
 	}
 
-	return nil, err
+	return nil, nil
 }

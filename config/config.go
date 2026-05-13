@@ -2,10 +2,10 @@ package config
 
 import (
 	"bytes"
-	"io/ioutil"
+	"fmt"
+	"os"
 	"time"
 
-	"github.com/pkg/errors"
 	"gopkg.in/yaml.v2"
 )
 
@@ -43,9 +43,9 @@ func New() *Config {
 
 // Load reads and loads an config file
 func Load(path string) (*Config, error) {
-	b, err := ioutil.ReadFile(path)
+	b, err := os.ReadFile(path)
 	if err != nil {
-		return nil, errors.Wrap(err, "could not open config file")
+		return nil, fmt.Errorf("could not open config file: %w", err)
 	}
 
 	return Parse(b)
@@ -56,7 +56,7 @@ func Parse(b []byte) (*Config, error) {
 	cfg := New()
 	err := yaml.NewDecoder(bytes.NewReader(b)).Decode(cfg)
 	if err != nil {
-		return nil, errors.Wrap(err, "could not parse config")
+		return nil, fmt.Errorf("could not parse config: %w", err)
 	}
 
 	return cfg, nil
