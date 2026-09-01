@@ -43,7 +43,7 @@ func New() *Config {
 
 // Load reads and loads an config file
 func Load(path string) (*Config, error) {
-	b, err := os.ReadFile(path)
+	b, err := os.ReadFile(path) // #nosec G304 -- path comes from a CLI flag set by the operator, not untrusted input
 	if err != nil {
 		return nil, fmt.Errorf("could not open config file: %w", err)
 	}

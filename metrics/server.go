@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
@@ -46,9 +47,20 @@ func NewServer(address string) (*Server, error) {
 
 // Listen listens for incoming metric scrape requests
 func (srv *Server) Listen() error {
-	http.Handle("/metrics", promhttp.Handler())
+	mux := http.NewServeMux()
+	mux.Handle("/metrics", promhttp.Handler())
+
+	httpSrv := &http.Server{
+		Addr:              srv.address,
+		Handler:           mux,
+		ReadHeaderTimeout: 5 * time.Second,
+		ReadTimeout:       5 * time.Second,
+		WriteTimeout:      10 * time.Second,
+		IdleTimeout:       60 * time.Second,
+	}
+
 	logrus.Infof("Listen for metrics requests on %s", srv.address)
-	return http.ListenAndServe(srv.address, nil)
+	return httpSrv.ListenAndServe()
 }
 
 func (srv *Server) init() error {
