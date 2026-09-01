@@ -4,4 +4,4 @@ import (
 	"fmt"
 )
 
-var hostDrainedErr = fmt.Errorf("Host ist drained")
+var hostDrainedErr = fmt.Errorf("host is drained")

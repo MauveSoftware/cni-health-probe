@@ -9,7 +9,7 @@ import (
 	"github.com/MauveSoftware/cni-health-probe/config"
 	"github.com/MauveSoftware/cni-health-probe/metrics"
 
-	"github.com/go-ping/ping"
+	probing "github.com/prometheus-community/pro-bing"
 	"github.com/sirupsen/logrus"
 )
 
@@ -55,7 +55,7 @@ func (m *monitor) run() {
 }
 
 func (m *monitor) checkConnectivity(n *node) {
-	p, err := ping.NewPinger(n.ip.String())
+	p, err := probing.NewPinger(n.ip.String())
 	if err != nil {
 		logrus.Error(err)
 	}

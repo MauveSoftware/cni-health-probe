@@ -12,6 +12,8 @@ import (
 	"go.opentelemetry.io/otel/exporters/prometheus"
 	"go.opentelemetry.io/otel/metric"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
+
+	"github.com/prometheus/otlptranslator"
 )
 
 // Reporter allows reporting of metrics
@@ -50,7 +52,7 @@ func (srv *Server) Listen() error {
 }
 
 func (srv *Server) init() error {
-	exporter, err := prometheus.New(prometheus.WithoutUnits())
+	exporter, err := prometheus.New(prometheus.WithTranslationStrategy(otlptranslator.UnderscoreEscapingWithSuffixes))
 	if err != nil {
 		return fmt.Errorf("failed to initialize prometheus exporter: %w", err)
 	}
