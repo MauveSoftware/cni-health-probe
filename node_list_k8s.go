@@ -77,7 +77,7 @@ func (l *apiNodeList) list() ([]*node, error) {
 	}
 
 	if !containsMyHost {
-		return nil, hostDrainedErr
+		return nil, errHostDrained
 	}
 
 	return list, nil
