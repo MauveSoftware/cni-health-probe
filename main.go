@@ -5,7 +5,7 @@ import (
 	"github.com/MauveSoftware/cni-health-probe/metrics"
 	"github.com/sirupsen/logrus"
 
-	kingpin "gopkg.in/alecthomas/kingpin.v2"
+	kingpin "github.com/alecthomas/kingpin/v2"
 )
 
 func main() {
