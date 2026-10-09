@@ -1,6 +1,6 @@
 module github.com/MauveSoftware/cni-health-probe
 
-go 1.26.6
+go 1.26.9
 
 require (
 	github.com/alecthomas/units v0.0.0-20240927000941-0f3dac36c52b // indirect
