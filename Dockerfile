@@ -17,10 +17,8 @@ RUN apk --no-cache add libcap && \
   setcap cap_net_raw,cap_net_admin+eip /out/cni-health-probe
 
 
-FROM alpine:3.24.2@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6
+FROM gcr.io/distroless/static-debian13:nonroot@sha256:d62067879de890a1def9da0e7766b7d20810a5e5555cef8506b752437d7a3e88
 ENV CONFIG_FILE=/config/config.yml
-ENV CMD_ARGS=""
-RUN apk --no-cache add ca-certificates bash
 COPY --from=builder /out/cni-health-probe /app/cni-health-probe
 EXPOSE 9999
-ENTRYPOINT /app/cni-health-probe --config $CONFIG_FILE $CMD_ARGS
+ENTRYPOINT ["/app/cni-health-probe"]
