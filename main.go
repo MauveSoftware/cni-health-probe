@@ -10,6 +10,8 @@ import (
 	kingpin "github.com/alecthomas/kingpin/v2"
 )
 
+const version string = "1.0.0"
+
 type cliArgs struct {
 	configFile     string
 	metricsAddress string
@@ -18,6 +20,7 @@ type cliArgs struct {
 func parseArgs(args []string) (*cliArgs, error) {
 	a := &cliArgs{}
 	app := kingpin.New("cni-health-probe", "Probe to check network connectivity in kubernetes CNI")
+	app.Version(version)
 	app.Flag("config", "Path to config file").Envar("CONFIG_FILE").Default("config.yml").StringVar(&a.configFile)
 	app.Flag("metrics-address", "Listen address for metrics").Envar("METRICS_ADDRESS").Default(":9999").StringVar(&a.metricsAddress)
 
@@ -34,6 +37,8 @@ func main() {
 	if err != nil {
 		logrus.Fatal(err)
 	}
+
+	logrus.Infof("Starting CNI health probe (Version: %s)", version)
 
 	cfg, err := config.Load(args.configFile)
 	if err != nil {
