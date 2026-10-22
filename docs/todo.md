@@ -1,10 +1,11 @@
 # TODO
 
 ## Open
-- [ ] (medium) Drop `cap_net_admin` from `setcap` in Dockerfile: ICMP raw sockets only need `cap_net_raw`. As nonroot, exec fails with EPERM unless the pod adds every file capability (NET_ADMIN is not in the default container capability set).
+(none)
 
 ## Done
 - [x] Switch runtime image to distroless `static-debian13:nonroot`; read flags from env (`CONFIG_FILE`, `METRICS_ADDRESS`) since there is no shell to expand `$CMD_ARGS`
+- [x] Drop `cap_net_admin` from `setcap`: ICMP raw sockets only need `cap_net_raw`, and as nonroot every file capability must be granted to the container or exec fails with EPERM
 
 ## Decisions
 - Only CLI flags get env support; the YAML config file stays required (config map mounts work fine with distroless).

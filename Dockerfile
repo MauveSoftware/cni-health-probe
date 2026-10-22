@@ -14,7 +14,7 @@ RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH:-amd64} \
   -o /out/cni-health-probe .
 
 RUN apk --no-cache add libcap && \
-  setcap cap_net_raw,cap_net_admin+eip /out/cni-health-probe
+  setcap cap_net_raw+eip /out/cni-health-probe
 
 
 FROM gcr.io/distroless/static-debian13:nonroot@sha256:d62067879de890a1def9da0e7766b7d20810a5e5555cef8506b752437d7a3e88
